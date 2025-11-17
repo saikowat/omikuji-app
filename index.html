@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>シンプルおみくじアプリ</title>
+    <style>
+        /* --- CSS: 見た目を整える --- */
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #f4f4f9; /* やさしい背景色 */
+            padding-top: 50px;
+        }
+
+        #draw-button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #4CAF50; /* 緑色のボタン */
+            color: white;
+            border: none;
+            border-radius: 8px; /* 角を丸くする */
+            cursor: pointer; /* マウスカーソルを指の形にする */
+            transition: background-color 0.3s; /* 色の変化を滑らかに */
+        }
+
+        #draw-button:hover {
+            background-color: #45a049; /* マウスを乗せたら少し濃く */
+        }
+
+        #result {
+            margin-top: 30px;
+            font-size: 48px; /* 大きく目立つ文字 */
+            font-weight: bold;
+            color: #333;
+            min-height: 60px; /* 結果が何もなくても高さを確保 */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>おみくじで今日の運勢を占おう！</h1>
+
+    <button id="draw-button">おみくじを引く</button>
+    <p id="result">結果待ち</p>
+
+    <script>
+        /* --- JavaScript: 動作 (ロジック) --- */
+
+        // 1. 運勢のリストを作成
+        const fortunes = [
+            "大吉", "大吉", "中吉", "中吉",
+            "小吉", "小吉", "末吉", "末吉",
+            "凶"
+        ];
+        // ヒント: "大吉"を多めに入れることで、出現率を高くしています！
+
+        // 2. HTML要素を取得
+        const drawButton = document.getElementById('draw-button');
+        const resultDisplay = document.getElementById('result');
+
+        // 3. おみくじを引く関数を定義
+        function drawOmikuji() {
+            // リストの長さ（要素数）を取得
+            const maxIndex = fortunes.length;
+
+            // 0から(maxIndex-1)までのランダムな整数を生成
+            // Math.random()は0以上1未満の小数を生成
+            const randomIndex = Math.floor(Math.random() * maxIndex);
+
+            // ランダムに選ばれた運勢を取得
+            const selectedFortune = fortunes[randomIndex];
+
+            // 4. 結果を表示エリアに書き込む
+            resultDisplay.textContent = selectedFortune;
+
+            // おみくじ結果に応じて文字の色を変える（追加機能）
+            if (selectedFortune === "大吉") {
+                resultDisplay.style.color = "#FF4500"; // オレンジレッド
+            } else if (selectedFortune === "凶") {
+                resultDisplay.style.color = "#696969"; // ダークグレイ
+            } else {
+                resultDisplay.style.color = "#333"; // 基本色
+            }
+        }
+
+        // 5. ボタンに「クリックされたらdrawOmikujiを実行する」という設定を付ける
+        drawButton.addEventListener('click', drawOmikuji);
+    </script>
+
+</body>
+</html>
