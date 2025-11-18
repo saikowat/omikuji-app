@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>シンプルおみくじアプリ</title>
+    <title>今日ガチャ</title>
     <style>
         /* --- CSS: 見た目を整える --- */
         body {
@@ -18,74 +18,219 @@
             background-color: #4CAF50; /* 緑色のボタン */
             color: white;
             border: none;
-            border-radius: 8px; /* 角を丸くする */
-            cursor: pointer; /* マウスカーソルを指の形にする */
-            transition: background-color 0.3s; /* 色の変化を滑らかに */
+            border-radius: 8px;
+            cursor: pointer;
+            
+            transition: all 0.1s; /* 全ての変化を0.1秒で高速に実行 */
+            box-shadow: 0 5px 0 #388E3C; /* ボタンの下に濃い影（奥行き）を作成 */
         }
 
         #draw-button:hover {
-            background-color: #45a049; /* マウスを乗せたら少し濃く */
+            background-color: #45a049;
+        }
+        
+        /* ボタンをクリックしている間（:active）のスタイルを定義 */
+        #draw-button:active {
+            transform: translateY(5px); /* 5ピクセル下に移動させる */
+            box-shadow: none; /* 影を消すことで沈み込んだように見せる */
+        }
+
+        #fortune-image {
+            width: 500px; 
+            display: none; /* 要素を非表示にする */
+            margin: 20px auto;
         }
 
         #result {
             margin-top: 30px;
-            font-size: 48px; /* 大きく目立つ文字 */
+            font-size: 30px;
             font-weight: bold;
             color: #333;
             min-height: 60px; /* 結果が何もなくても高さを確保 */
+        }
+
+        /* 結果表示エリアと画像にトランジションを設定 */
+        #result, #fortune-image {
+            transition: opacity 0.5s ease-in-out; /* 透明度の変化を0.5秒かけて滑らかに実行 */
+            opacity: 0; /* 初期状態を完全に透明にする */
         }
     </style>
 </head>
 <body>
 
-    <h1>おみくじで今日の運勢を占おう！</h1>
+    <div id="weather-info">
+        <img id="weather-icon" src="" alt="天気アイコン" style="vertical-align: middle;">
+        <p><span id="description-display">--</span>
+        <span id="temp-min-display">--</span> / <span id="temp-max-display">--</span></p>
+    </div>
 
-    <button id="draw-button">おみくじを引く</button>
-    <p id="result">結果待ち</p>
+    <button id="draw-button">ガチャを引く</button>
+    <img id="fortune-image" src="" alt="ガチャ結果の画像" >
+    <p id="result">はてさて</p>
 
-    <script>
-        /* --- JavaScript: 動作 (ロジック) --- */
+<script>
+    /* --- JavaScript: 動作 (ロジック) --- */
 
-        // 1. 運勢のリストを作成
-        const fortunes = [
-            "大吉", "大吉", "中吉", "中吉",
-            "小吉", "小吉", "末吉", "末吉",
-            "凶"
-        ];
-        // ヒント: "大吉"を多めに入れることで、出現率を高くしています！
+    // 1. 運勢のリストを作成
+    const fortunes = [
+        "01. 待たせるのはギルティ", "02. 5分経ってわからなければ聞く", "03. 段取り8割 早めの行動", "04. ひとりごとアウトプットをしよう",
+        "05. 下からすぎない 圧を身に着けよ", "06. Slackに投げて文殊の知恵を借りろ", "07. 自分のくせを理解して操縦せよ",
+        "08. 手を付けて見積もってから仕上げ時期を決める", "09. ゴールを見ろ", "10. 煮詰まったらスクワットでも", "11. ゴールをメモって見返そう", 
+        "12. 一旦スケジュールを忘れて全力でいけ", "13. 作り終わってから細部を整える", "14. 「自分が何とかしなければ、、」の精神を持つ", 
+        "15. やっときましょうか？の精神を持つ", "16. 何もしないことが最も罪深い 行動を", 
+        "17. 許可より謝罪", "18. ポジティブオーラをまとえ", "19. 心に柴犬を抱えて働け", "20. タメ口で行くくらいの精神",
+    ];
 
-        // 2. HTML要素を取得
-        const drawButton = document.getElementById('draw-button');
-        const resultDisplay = document.getElementById('result');
+    // 2. HTML要素を取得
+    const drawButton = document.getElementById('draw-button');
+    const resultDisplay = document.getElementById('result');
 
-        // 3. おみくじを引く関数を定義
-        function drawOmikuji() {
-            // リストの長さ（要素数）を取得
-            const maxIndex = fortunes.length;
+    // 3. おみくじを引く関数を定義 (変更後)
+    function drawOmikuji() {
+        const maxIndex = fortunes.length;
+        const randomIndex = Math.floor(Math.random() * maxIndex);
+        const selectedFortune = fortunes[randomIndex];
 
-            // 0から(maxIndex-1)までのランダムな整数を生成
-            // Math.random()は0以上1未満の小数を生成
-            const randomIndex = Math.floor(Math.random() * maxIndex);
+        // 新しい画像表示要素を取得
+        const resultImage = document.getElementById('fortune-image');
+        
+        // 運勢に応じたファイル名を設定する変数
+        let imageName = "";
 
-            // ランダムに選ばれた運勢を取得
-            const selectedFortune = fortunes[randomIndex];
-
-            // 4. 結果を表示エリアに書き込む
-            resultDisplay.textContent = selectedFortune;
-
-            // おみくじ結果に応じて文字の色を変える（追加機能）
-            if (selectedFortune === "大吉") {
-                resultDisplay.style.color = "#FF4500"; // オレンジレッド
-            } else if (selectedFortune === "凶") {
-                resultDisplay.style.color = "#696969"; // ダークグレイ
-            } else {
-                resultDisplay.style.color = "#333"; // 基本色
-            }
+        // 運勢に応じて表示テキストと画像名を決定
+        if (selectedFortune === "01. 待たせるのはギルティ") {
+            resultDisplay.style.color = "#FF4500";
+            imageName = "01.png";
+        } else if (selectedFortune === "02. 5分経ってわからなければ聞く") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "02.png";
+        } else if (selectedFortune === "03. 段取り8割 早めの行動") {
+            resultDisplay.style.color = "#696969";
+            imageName = "03.png";
+        } else if (selectedFortune === "04. ひとりごとアウトプットをしよう") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "04.png";
+        } else if (selectedFortune === "05. 下からすぎない 圧を身に着けよ") {
+            resultDisplay.style.color = "#696969";
+            imageName = "05.png";
+        } else if (selectedFortune === "06. Slackに投げて文殊の知恵を借りろ") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "06.png";
+        } else if (selectedFortune === "07. 自分のくせを理解して操縦せよ") {
+            resultDisplay.style.color = "#696969";
+            imageName = "07.png";
+        } else if (selectedFortune === "08. 手を付けて見積もってから仕上げ時期を決める") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "08.png";
+        } else if (selectedFortune === "09. ゴールを見ろ") {
+            resultDisplay.style.color = "#696969";
+            imageName = "09.png";
+        } else if (selectedFortune === "10. 煮詰まったらスクワットでも") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "10.png";
+        } else if (selectedFortune === "11. ゴールをメモって見返そう") {
+            resultDisplay.style.color = "#696969";
+            imageName = "11.png";
+        } else if (selectedFortune === "12. 一旦スケジュールを忘れて全力でいけ") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "12.png";
+        } else if (selectedFortune === "13. 作り終わってから細部を整える") {
+            resultDisplay.style.color = "#696969";
+            imageName = "13.png";
+        } else if (selectedFortune === "14. 「自分が何とかしなければ、、」の精神を持つ") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "14.png";
+        } else if (selectedFortune === "15. やっときましょうか？の精神を持つ") {
+            resultDisplay.style.color = "#696969";
+            imageName = "15.png";
+        } else if (selectedFortune === "16. 何もしないことが最も罪深い 行動を") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "16.png";
+        } else if (selectedFortune === "17. 許可より謝罪") {
+            resultDisplay.style.color = "#696969";
+            imageName = "17.png";
+        } else if (selectedFortune === "18. ポジティブオーラをまとえ") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "18.png";
+        } else if (selectedFortune === "19. 心に柴犬を抱えて働け") {
+            resultDisplay.style.color = "#696969";
+            imageName = "19.png";
+        } else if (selectedFortune === "20. タメ口で行くくらいの精神") {
+            resultDisplay.style.color = "#45a049";
+            imageName = "20.png"
         }
+        
+        // 結果を表示エリアに書き込む
+        resultDisplay.textContent = selectedFortune;
 
-        // 5. ボタンに「クリックされたらdrawOmikujiを実行する」という設定を付ける
-        drawButton.addEventListener('click', drawOmikuji);
-    </script>
+        // 画像要素の src (ソース) を更新して画像を表示
+        resultImage.src = "images/" + imageName; 
+        // ↑ imagesフォルダに入れた画像を表示するパス
+
+        // 画像を表示する (display: none を解除する)
+        resultImage.style.display = "block";
+
+        // 画像と結果の透明度を1に戻し、フェードインさせる
+        resultImage.style.opacity = "1";
+        resultDisplay.style.opacity = "1";
+        
+    }
+
+    // --- 4. 天気情報を取得・表示する関数 ---
+
+    const API_KEY = "59236f40aa6bf4dc86d4e2e4429f7a63"; 
+    const CITY_ID = "1850147"; // 東京のCity ID
+
+    function fetchWeather() {
+        // OpenWeatherMapのAPIエンドポイント
+        const url = `https://api.openweathermap.org/data/2.5/weather?id=${CITY_ID}&appid=${API_KEY}&units=metric&lang=ja`;
+        
+        // fetch関数を使ってAPIにリクエストを送信
+        fetch(url)
+            .then(response => response.json()) // 受け取ったデータをJSON形式に変換
+            .then(data => {
+                // ★★★ 取得するデータ ★★★
+                const tempMin = data.main.temp_min;             // 最低気温
+                const tempMax = data.main.temp_max;             // 最高気温
+                const description = data.weather[0].description;  // 天気の説明
+                const iconCode = data.weather[0].icon;            // 天気アイコンコード ("04d"など)
+
+                // ★★★ HTML要素への表示 ★★★
+                
+                // 1. 最高/最低気温の表示
+                const tempMaxDisplay = document.getElementById('temp-max-display');
+                tempMaxDisplay.textContent = `${tempMax}°C`;
+
+                const tempMinDisplay = document.getElementById('temp-min-display');
+                tempMinDisplay.textContent = `${tempMin}°C`;
+                
+                // 2. 天気アイコンの表示
+                const weatherIcon = document.getElementById('weather-icon');
+                // OpenWeatherMapのアイコンURLにコードを組み込んで表示
+                weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+
+
+                // 3. 天気の表示 
+                const descriptionDisplay = document.getElementById('description-display');
+                descriptionDisplay.textContent = description;
+
+                console.log("天気データの取得に成功しました:", data);
+            })
+            .catch(error => {
+                console.error("天気データの取得中にエラーが発生しました:", error);
+                // エラー時の表示も、全てハイフンに設定
+                document.getElementById('temp-max-display').textContent = "--";
+                document.getElementById('temp-min-display').textContent = "--";
+                document.getElementById('description-display').textContent = "取得失敗";
+            });
+    }
+
+    // 5. アプリがロードされたらすぐに天気情報を取得する
+    fetchWeather(); 
+    
+    // 6. ボタンに「クリックされたらdrawOmikujiを実行する」という設定を付ける
+    drawButton.addEventListener('click', drawOmikuji);
+</script>
 
 </body>
 </html>
