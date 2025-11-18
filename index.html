@@ -3,30 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>今日ガチャ</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* --- CSS: 見た目を整える --- */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: "M PLUS Rounded 1c", sans-serif;
             text-align: center;
-            background-color: #f4f4f9; /* やさしい背景色 */
+            background-color: #D1C4E9; /* 現在の背景色 */
             padding-top: 50px;
         }
 
         #draw-button {
             padding: 15px 30px;
             font-size: 20px;
-            background-color: #4CAF50; /* 緑色のボタン */
-            color: white;
+            background-color: #E1BEE7;
+            color: #666666;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             
             transition: all 0.1s; /* 全ての変化を0.1秒で高速に実行 */
-            box-shadow: 0 5px 0 #388E3C; /* ボタンの下に濃い影（奥行き）を作成 */
+            box-shadow: 0 5px 0 #C5AECA; /* ボタンの下に濃い影（奥行き）を作成 */
         }
 
         #draw-button:hover {
-            background-color: #45a049;
+            background-color: #D4B6DB;
         }
         
         /* ボタンをクリックしている間（:active）のスタイルを定義 */
