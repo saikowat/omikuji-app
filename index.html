@@ -58,6 +58,8 @@
 </head>
 <body>
 
+    <p id="date-display">--年--月--日 (--)</p>
+
     <div id="weather-info">
         <img id="weather-icon" src="" alt="天気アイコン" style="vertical-align: middle;">
         <p><span id="description-display">--</span>
@@ -76,8 +78,8 @@
         "01. 待たせるのはギルティ", "02. 5分経ってわからなければ聞く", "03. 段取り8割 早めの行動", "04. ひとりごとアウトプットをしよう",
         "05. 下からすぎない 圧を身に着けよ", "06. Slackに投げて文殊の知恵を借りろ", "07. 自分のくせを理解して操縦せよ",
         "08. 手を付けて見積もってから仕上げ時期を決める", "09. ゴールを見ろ", "10. 煮詰まったらスクワットでも", "11. ゴールをメモって見返そう", 
-        "12. 一旦スケジュールを忘れて全力でいけ", "13. 作り終わってから細部を整える", "14. 「自分が何とかしなければ、、」の精神を持つ", 
-        "15. やっときましょうか？の精神を持つ", "16. 何もしないことが最も罪深い 行動を", 
+        "12. 一旦スケジュールを忘れて全力でいけ", "13. 作り終わってから細部を整える", "14. 「自分が何とかしなければ、、」の精神", 
+        "15. やっときましょうか？の精神", "16. 何もしないことが最も罪深い 行動を", 
         "17. 許可より謝罪", "18. ポジティブオーラをまとえ", "19. 心に柴犬を抱えて働け", "20. タメ口で行くくらいの精神",
     ];
 
@@ -137,10 +139,10 @@
         } else if (selectedFortune === "13. 作り終わってから細部を整える") {
             resultDisplay.style.color = "#696969";
             imageName = "13.png";
-        } else if (selectedFortune === "14. 「自分が何とかしなければ、、」の精神を持つ") {
+        } else if (selectedFortune === "14. 「自分が何とかしなければ、、」の精神") {
             resultDisplay.style.color = "#45a049";
             imageName = "14.png";
-        } else if (selectedFortune === "15. やっときましょうか？の精神を持つ") {
+        } else if (selectedFortune === "15. やっときましょうか？の精神") {
             resultDisplay.style.color = "#696969";
             imageName = "15.png";
         } else if (selectedFortune === "16. 何もしないことが最も罪深い 行動を") {
@@ -181,48 +183,48 @@
     const API_KEY = "59236f40aa6bf4dc86d4e2e4429f7a63"; 
     const CITY_ID = "1850147"; // 東京のCity ID
 
-    function fetchWeather() {
-        // OpenWeatherMapのAPIエンドポイント
-        const url = `https://api.openweathermap.org/data/2.5/weather?id=${CITY_ID}&appid=${API_KEY}&units=metric&lang=ja`;
-        
-        // fetch関数を使ってAPIにリクエストを送信
-        fetch(url)
-            .then(response => response.json()) // 受け取ったデータをJSON形式に変換
-            .then(data => {
-                // ★★★ 取得するデータ ★★★
-                const tempMin = data.main.temp_min;             // 最低気温
-                const tempMax = data.main.temp_max;             // 最高気温
-                const description = data.weather[0].description;  // 天気の説明
-                const iconCode = data.weather[0].icon;            // 天気アイコンコード ("04d"など)
+function fetchWeather() {
+    // OpenWeatherMapのAPIエンドポイント
+    const url = `https://api.openweathermap.org/data/2.5/weather?id=${CITY_ID}&appid=${API_KEY}&units=metric&lang=ja`;
+    
+    // fetch関数を使ってAPIにリクエストを送信
+    fetch(url)
+        .then(response => response.json()) // 受け取ったデータをJSON形式に変換
+        .then(data => {
+            // ★★★ 取得するデータ ★★★
+            const tempMin = Math.round(data.main.temp_min); // Math.round()で四捨五入
+            const tempMax = Math.round(data.main.temp_max); // Math.round()で四捨五入
+            const description = data.weather[0].description;  // 天気の説明
+            const iconCode = data.weather[0].icon;            // 天気アイコンコード ("04d"など)
 
-                // ★★★ HTML要素への表示 ★★★
-                
-                // 1. 最高/最低気温の表示
-                const tempMaxDisplay = document.getElementById('temp-max-display');
-                tempMaxDisplay.textContent = `${tempMax}°C`;
+            // ★★★ HTML要素への表示 ★★★
+            
+            // 1. 最高/最低気温の表示
+            const tempMaxDisplay = document.getElementById('temp-max-display');
+            tempMaxDisplay.textContent = `${tempMax}°C`; // 四捨五入された値を使用
 
-                const tempMinDisplay = document.getElementById('temp-min-display');
-                tempMinDisplay.textContent = `${tempMin}°C`;
-                
-                // 2. 天気アイコンの表示
-                const weatherIcon = document.getElementById('weather-icon');
-                // OpenWeatherMapのアイコンURLにコードを組み込んで表示
-                weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+            const tempMinDisplay = document.getElementById('temp-min-display');
+            tempMinDisplay.textContent = `${tempMin}°C`; // 四捨五入された値を使用
+            
+            // 2. 天気アイコンの表示
+            const weatherIcon = document.getElementById('weather-icon');
+            // OpenWeatherMapのアイコンURLにコードを組み込んで表示
+            weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
 
 
-                // 3. 天気の表示 
-                const descriptionDisplay = document.getElementById('description-display');
-                descriptionDisplay.textContent = description;
+            // 3. 天気の表示 
+            const descriptionDisplay = document.getElementById('description-display');
+            descriptionDisplay.textContent = description;
 
-                console.log("天気データの取得に成功しました:", data);
-            })
-            .catch(error => {
-                console.error("天気データの取得中にエラーが発生しました:", error);
-                // エラー時の表示も、全てハイフンに設定
-                document.getElementById('temp-max-display').textContent = "--";
-                document.getElementById('temp-min-display').textContent = "--";
-                document.getElementById('description-display').textContent = "取得失敗";
-            });
+            console.log("天気データの取得に成功しました:", data);
+        })
+        .catch(error => {
+            console.error("天気データの取得中にエラーが発生しました:", error);
+            // エラー時の表示も、全てハイフンに設定
+            document.getElementById('temp-max-display').textContent = "--";
+            document.getElementById('temp-min-display').textContent = "--";
+            document.getElementById('description-display').textContent = "取得失敗";
+        });
     }
 
     // 5. アプリがロードされたらすぐに天気情報を取得する
@@ -230,6 +232,32 @@
     
     // 6. ボタンに「クリックされたらdrawOmikujiを実行する」という設定を付ける
     drawButton.addEventListener('click', drawOmikuji);
+
+    // 7. 日付と曜日を表示する関数
+        function displayDate() {
+        // 現在のDateオブジェクトを取得
+        const now = new Date();
+        
+        // 年月日を取得
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1; // getMonth()は0から始まるため +1 する
+        const day = now.getDate();
+        
+        // 曜日を取得
+        const days = ["日", "月", "火", "水", "木", "金", "土"];
+        const dayOfWeek = days[now.getDay()]; // getDay()は0(日)から6(土)を返す
+        
+        // 表示用の文字列を組み立てる
+        const dateString = `${year}年${month}月${day}日 (${dayOfWeek})`;
+        
+        // HTMLに書き出す
+        const dateDisplay = document.getElementById('date-display');
+        dateDisplay.textContent = dateString;
+    }
+
+    // 8. アプリがロードされたらすぐに日付を表示する
+    displayDate();
+
 </script>
 
 </body>
